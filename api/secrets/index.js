@@ -7,5 +7,7 @@
   developers cloning this repo won't be able to run the project as is.
  */
 module.exports = {
+// this allows developer cloning this project, but not having the enviorment link to the secert
+JWT_SECRET: process.env.JWT_SECRET || "shh",
 
 }

@@ -1,5 +1,9 @@
 const db = require('../../data/db-config.js');
 
+// fleshing out time
+
+// we need to join two table with  querry 
+
 function find() {
   /**
     You will need to join two tables.
@@ -18,8 +22,20 @@ function find() {
       }
     ]
    */
-}
 
+    // we are going to test the sql querry 
+
+  return db("users")
+  .join("roles", "users.role_id", "roles.role_id")
+  .select("user_id", "username", "role_name") 
+
+  
+    // return db 
+    // .select("u.user_id","u.username", "r.role_name")
+    // .orderBy("u.user_id")
+   
+}
+              //condition
 function findBy(filter) {
   /**
     You will need to join two tables.
@@ -34,20 +50,36 @@ function findBy(filter) {
       }
     ]
    */
+  return db("users") // is the table location
+
+  .join("roles", "users.role_id", "roles.role_id")
+  .select("user_id", "username", "role_name", "password") 
+  .orderBy("username")
+  .where(filter)  // the users router is invoking the sql 
+  
 }
+
 
 function findById(user_id) {
   /**
     You will need to join two tables.
     Resolves to the user with the given user_id.
 
-    {
+    
       "user_id": 2,
       "username": "sue",
       "role_name": "instructor"
     }
    */
+    return db("users") // is the table location
+
+  .join("roles", "users.role_id", "roles.role_id")
+  .select("user_id", "username", "role_name", "password") 
+  .orderBy("username")
+  .where("users.user_id", user_id).first()  // the users router is invoking the sql 
+  
 }
+
 
 /**
   Creating a user requires a single insert (into users) if the role record with the given
