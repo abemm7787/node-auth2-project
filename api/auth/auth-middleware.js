@@ -36,7 +36,17 @@ const only = (role_name) => (req, res, next) => {
   next();
 };
 
-const checkUsernameExists = (req, res, next) => {
+async function checkUsernameExists(req, res, next) {
+  try {
+    const users = await User.findBy({ username: req.body.username });
+    if (!users.length) {
+      next();
+    } else {
+      next({ message: "Username taken" });
+    }
+  } catch (err) {
+    next(err);
+  }
   /*
     If the username in req.body does NOT exist in the database
     status 401
@@ -44,8 +54,7 @@ const checkUsernameExists = (req, res, next) => {
       "message": "Invalid credentials"
     }
   */
-  next();
-};
+}
 
 // commnand click
 const validateRoleName = (req, res, next) => {
@@ -70,13 +79,15 @@ const validateRoleName = (req, res, next) => {
   if (!req.body.role_name || !req.body.role_name.trim()) {
     req.role_name = "student";
     next();
-    
   } else if (req.body.role_name.trim() === "admin") {
     next({ status: 422, message: "Role name can not be admin " });
   } else if (req.body.role_name.trim().length > 12) {
-    next({ status: 422, message: "Role name can not be longer than 32 characters" });
+    next({
+      status: 422,
+      message: "Role name can not be longer than 32 characters",
+    });
   } else {
- //   req.role_name = req.body_name.trim()
+    //   req.role_name = req.body_name.trim()
     next();
   }
 };
