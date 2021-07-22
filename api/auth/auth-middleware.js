@@ -1,4 +1,5 @@
 const { JWT_SECRET } = require("../secrets"); // use this secret!
+const User = require("../users/users-model")
 
 const restricted = (req, res, next) => {
   /*
@@ -22,6 +23,25 @@ const restricted = (req, res, next) => {
   next();
 };
 
+
+
+async function checkUsernameFree(req, res, next) {
+  try {
+    const users = await User.findBy({ username: req.body.username });
+    if (!users.length) {
+      next();
+    } else {
+      next({ message: "Username taken",status: 422 }); // unprocessable entity
+    }
+  } catch (err) {
+    next(err);
+  }
+}
+
+
+
+
+
 const only = (role_name) => (req, res, next) => {
   /*
     If the user does not provide a token in the Authorization header with a role_name
@@ -42,7 +62,7 @@ async function checkUsernameExists(req, res, next) {
     if (!users.length) {
       next();
     } else {
-      next({ message: "Username taken" });
+      next({ message: "Username taken", status:401 });
     }
   } catch (err) {
     next(err);
@@ -97,4 +117,5 @@ module.exports = {
   checkUsernameExists,
   validateRoleName,
   only,
+  checkUsernameFree,
 };
