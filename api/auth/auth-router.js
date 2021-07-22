@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const { checkUsernameExists, validateRoleName } = require('./auth-middleware');
 const { JWT_SECRET } = require("../secrets"); // use this secret!
-
+const bcrypt = require("bcryptjs") // adding bycrupt which is hasg
+const User = require("../users/users-model")
 router.post("/register", validateRoleName, (req, res, next) => {
   /**
     [POST] /api/auth/register { "username": "anna", "password": "1234", "role_name": "angel" }
@@ -14,6 +15,17 @@ router.post("/register", validateRoleName, (req, res, next) => {
       "role_name": "angel"
     }
    */
+res.json({ message:"Hello there work now"})
+const {username, password} = req.nody
+
+const {role_name} = req // why does this not have a body?
+const hash = bcrypt.hashSync(password, 8) // make this tolerab
+
+User.add({ username, password: hash, role_name})
+.then(noidea => {
+  res.status(201).json(noidea)
+})
+.catch(next)
 });
 
 

@@ -56,8 +56,9 @@ function findBy(filter) {
   .select("user_id", "username", "role_name", "password") 
   .orderBy("username")
   .where(filter)  // the users router is invoking the sql 
-  
+
 }
+
 
 
 function findById(user_id) {
