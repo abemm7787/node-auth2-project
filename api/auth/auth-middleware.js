@@ -20,9 +20,8 @@ const restricted = (req, res, next) => {
     
   */
   // we are using the next() to skip the retricted for now
-  next();
-};
 
+};
 
 
 async function checkUsernameFree(req, res, next) {
@@ -42,6 +41,21 @@ async function checkUsernameFree(req, res, next) {
 
 
 
+async function checkUsernameExists(req, res, next) {
+  try {
+    const [users] = await User.findBy({ username: req.body.username });
+    if (!users) {
+      next({ message: "Username taken",status: 401 }); // unprocessable entity
+    } else {
+      req.user = users 
+      next();
+    }
+  } catch (err) {
+    next(err);
+  }
+}
+
+
 const only = (role_name) => (req, res, next) => {
   /*
     If the user does not provide a token in the Authorization header with a role_name
@@ -56,17 +70,7 @@ const only = (role_name) => (req, res, next) => {
   next();
 };
 
-async function checkUsernameExists(req, res, next) {
-  try {
-    const users = await User.findBy({ username: req.body.username });
-    if (!users.length) {
-      next();
-    } else {
-      next({ message: "Username taken", status:401 });
-    }
-  } catch (err) {
-    next(err);
-  }
+
   /*
     If the username in req.body does NOT exist in the database
     status 401
@@ -74,7 +78,7 @@ async function checkUsernameExists(req, res, next) {
       "message": "Invalid credentials"
     }
   */
-}
+
 
 // commnand click
 const validateRoleName = (req, res, next) => {
@@ -111,11 +115,26 @@ const validateRoleName = (req, res, next) => {
     next();
   }
 };
+// this is for registrating the user
+function checkPasswordLength(req, res, next){
+  if(!req.body.password  || req.body.password.length < 3){
+    next({message: "Password must be longer than 3 charcters", status:422})
+  }
+  else{
+    next()
+  }
+ }
+
+
+
+
 
 module.exports = {
   restricted,
   checkUsernameExists,
   validateRoleName,
-  only,
   checkUsernameFree,
+  checkPasswordLength,
+  only,
 };
+
